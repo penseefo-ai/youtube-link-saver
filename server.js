@@ -29,9 +29,14 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
+// ─── HEALTH CHECK ───────────────────────────────────────────────────────────────
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', db: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected' });
+});
+
 // ─── CATEGORIES ────────────────────────────────────────────────────────────────
 
-// GET all categories
 app.get('/api/categories', async (req, res) => {
     try {
         const cats = await Category.find().sort({ createdAt: 1 });
@@ -39,7 +44,6 @@ app.get('/api/categories', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// POST create category
 app.post('/api/categories', async (req, res) => {
     const { name } = req.body;
     if (!name?.trim()) return res.status(400).json({ error: 'Category name is required' });
@@ -51,7 +55,6 @@ app.post('/api/categories', async (req, res) => {
     }
 });
 
-// DELETE category
 app.delete('/api/categories/:id', async (req, res) => {
     try {
         await Category.findByIdAndDelete(req.params.id);
@@ -62,7 +65,6 @@ app.delete('/api/categories/:id', async (req, res) => {
 
 // ─── LINKS ─────────────────────────────────────────────────────────────────────
 
-// GET all links (optional ?category_id=X or ?search=keyword)
 app.get('/api/links', async (req, res) => {
     try {
         const { category_id, search } = req.query;
@@ -85,7 +87,6 @@ app.get('/api/links', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// POST create link
 app.post('/api/links', async (req, res) => {
     const { title, url, category_id } = req.body;
     if (!title?.trim()) return res.status(400).json({ error: 'Title is required' });
@@ -108,7 +109,6 @@ app.post('/api/links', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// DELETE link
 app.delete('/api/links/:id', async (req, res) => {
     try {
         await Link.findByIdAndDelete(req.params.id);
@@ -121,14 +121,14 @@ app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// ─── START ──────────────────────────────────────────────────────────────────────
+// ─── START SERVER FIRST, THEN CONNECT DB ────────────────────────────────────────
 
+// Start HTTP server immediately so Railway can route traffic
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`✅ Server running on port ${PORT}`);
+});
+
+// Connect to MongoDB (non-blocking)
 mongoose.connect(MONGODB_URI)
-    .then(() => {
-        console.log('✅ Connected to MongoDB');
-        app.listen(PORT, () => console.log(`✅ Server running at http://localhost:${PORT}`));
-    })
-    .catch(err => {
-        console.error('❌ MongoDB connection failed:', err.message);
-        process.exit(1);
-    });
+    .then(() => console.log('✅ MongoDB connected'))
+    .catch(err => console.error('❌ MongoDB error:', err.message));
