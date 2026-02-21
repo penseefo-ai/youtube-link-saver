@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คลังลิงก์ YouTube</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── HEADER ─────────────────────────────────────────── -->
+  <header>
+    <div class="header-inner">
+      <div class="logo">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="#1877f2"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+        <span>คลังลิงก์ YouTube</span>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 ค้นหาคลิป..." />
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── CATEGORY TABS ──────────────────────────────────── -->
+  <div class="tabs-wrapper">
+    <div class="tabs" id="categoryTabs">
+      <button class="tab active" data-id="all">📋 ทั้งหมด</button>
+      <!-- dynamic tabs will be injected here -->
+    </div>
+    <button class="btn-icon" id="manageCatBtn" title="จัดการหมวดหมู่">⚙️ หมวดหมู่</button>
+  </div>
+
+  <!-- ─── MAIN CONTENT ───────────────────────────────────── -->
+  <main>
+    <!-- Add Link Form -->
+    <div class="card add-card">
+      <h2>➕ เพิ่มคลิปใหม่</h2>
+      <form id="addLinkForm">
+        <div class="form-row">
+          <input type="text" id="linkTitle" placeholder="ชื่อหัวข้อคลิป เช่น วิธีใช้ ChatGPT" required />
+        </div>
+        <div class="form-row">
+          <input type="url" id="linkUrl" placeholder="ลิงก์ YouTube เช่น https://youtu.be/..." required />
+        </div>
+        <div class="form-row form-bottom">
+          <select id="linkCategory">
+            <option value="">— ไม่ระบุหมวดหมู่ —</option>
+          </select>
+          <button type="submit" class="btn btn-primary">บันทึก</button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Links Grid -->
+    <div class="section-header">
+      <h2 id="sectionTitle">📺 คลิปทั้งหมด</h2>
+      <span id="linkCount" class="badge">0 คลิป</span>
+    </div>
+    <div id="linksGrid" class="links-grid">
+      <!-- cards injected by JS -->
+    </div>
+    <div id="emptyState" class="empty-state" style="display:none;">
+      <div class="empty-icon">📭</div>
+      <p>ยังไม่มีคลิปในหมวดนี้<br/>เพิ่มคลิปแรกของคุณได้เลย!</p>
+    </div>
+  </main>
+
+  <!-- ─── MANAGE CATEGORIES MODAL ───────────────────────── -->
+  <div id="catModal" class="modal-overlay" style="display:none;">
+    <div class="modal">
+      <div class="modal-header">
+        <h3>⚙️ จัดการหมวดหมู่</h3>
+        <button class="close-btn" id="closeCatModal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row">
+          <input type="text" id="newCatName" placeholder="ชื่อหมวดหมู่ใหม่ เช่น AI Tools, Python..." />
+          <button id="addCatBtn" class="btn btn-primary">เพิ่ม</button>
+        </div>
+        <div id="catList" class="cat-list">
+          <!-- categories list -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── DELETE CONFIRM MODAL ──────────────────────────── -->
+  <div id="deleteModal" class="modal-overlay" style="display:none;">
+    <div class="modal modal-small">
+      <div class="modal-header">
+        <h3>🗑️ ลบคลิป</h3>
+      </div>
+      <div class="modal-body">
+        <p>ต้องการลบคลิปนี้ใช่ไหม?</p>
+        <p id="deleteTargetName" class="delete-name"></p>
+        <div class="modal-actions">
+          <button id="cancelDeleteBtn" class="btn btn-ghost">ยกเลิก</button>
+          <button id="confirmDeleteBtn" class="btn btn-danger">ลบ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
